@@ -40,5 +40,3 @@ The original instance continued responding to health checks.
 
 ## Final health-check result:
 Command: curl --max-time 5 -i http://127.0.0.1:8000/health
-Observed HTTP status: [enter status]
-Observed response body: [enter response]
