@@ -22,7 +22,8 @@ A request to /missing returned HTTP 404 because that route is not defined.
 
 ## Port-conflict error:
 Starting a second Flask instance on the same address and port failed.
-Exact error: [paste the error you received]
+Exact error: Address already in use
+Port 8000 is in use by another program. Either identify and stop that program, or start the server with a different port.
 
 ## Root cause:
 The first Flask process already owned 127.0.0.1:8000.
