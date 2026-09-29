@@ -51,9 +51,18 @@ Docker port configuration, then restore access.
 6. Tested /health again from the host.
 
 ### Result
-Internal health-check status: [enter observed status]
-Host health-check status after correction: [enter observed status]
-Actual recovery time: [enter time, or omit if not measured]
+Internal health-check status: 200
+Host health-check status after correction: 
+HTTP/1.1 200 OK
+Server: gunicorn
+Date: Tue, 29 Sep 2026 05:31:38 GMT
+Connection: close
+Content-Type: application/json
+Content-Length: 19
+
+{"status":"alive"}
+
+Actual recovery time: 5 Min
 
 ## Key Learning
 - A running container does not guarantee the app is reachable.
