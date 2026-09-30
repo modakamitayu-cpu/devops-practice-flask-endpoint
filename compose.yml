@@ -1,0 +1,35 @@
+name: devops-day4
+
+services:
+  app:
+    build: .
+    ports:
+      - "127.0.0.1:8082:8000"
+    environment:
+      APP_READY: "true"
+      DB_HOST: db
+      DB_PORT: "5432"
+      DB_NAME: practice
+      DB_USER: labuser
+      DB_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_DB: practice
+      POSTGRES_USER: labuser
+      POSTGRES_PASSWORD: "${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U labuser -d practice"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+      start_period: 10s
+
+volumes:
+  pgdata:
