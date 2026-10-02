@@ -10,40 +10,43 @@ terraform {
 }
 
 provider "aws" {
-  region = "ap-soth-1"
+  region = var.aws_region
 }
 
 resource "aws_vpc" "lab" {
-  cidr_block           = "10.20.0.0/16"
+  cidr_block           = var.vpc_cidr
   enable_dns_support   = true
   enable_dns_hostnames = true
 
   tags = {
-    Name    = "devops-lab-vpc"
-    project = "devops_practoice"
+    Name        = "${var.environment}-devops-lab-vpc"
+    project     = "devops_practoice"
+    Environment = var.environment
   }
 }
 
 resource "aws_subnet" "public" {
   vpc_id                  = aws_vpc.lab.id
-  cidr_block              = "10.20.1.0/24"
-  availability_zone       = "ap-south-1a"
+  cidr_block              = var.public_subnet_cidr
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "devops-lab-public"
+    Name        = "${var.environment}-devops-public-subnet"
+    Environment = var.environment
   }
 
 }
 
 resource "aws_subnet" "private" {
   vpc_id                  = aws_vpc.lab.id
-  cidr_block              = "10.20.2.0/24"
-  availability_zone       = "ap-south-1a"
+  cidr_block              = var.private_subnet_cidr
+  availability_zone       = var.availability_zone
   map_public_ip_on_launch = false
 
   tags = {
-    Name = "devops_lab_private"
+    Name        = "${var.environment}-devops-private-subnet"
+    Environment = var.environment
   }
 
 }
@@ -53,7 +56,8 @@ resource "aws_internet_gateway" "lab" {
   vpc_id = aws_vpc.lab.id
 
   tags = {
-    Name = "devops-lab-igw"
+    Name        = "${var.environment}-devops-lab-igw"
+    Environment = var.environment
   }
 
 }
@@ -62,7 +66,8 @@ resource "aws_route_table" "public" {
   vpc_id = aws_vpc.lab.id
 
   tags = {
-    Name = "devops_lab_public-rt"
+    Name        = "${var.environment}-devops_lab_public-rt"
+    Environment = var.environment
   }
 
 }
@@ -82,7 +87,8 @@ resource "aws_route_table" "private" {
   vpc_id = aws_vpc.lab.id
 
   tags = {
-    Name = "devops-lab-private-rt"
+    Name        = "${var.environment}-devops-lab-private-rt"
+    Environment = var.environment
   }
 }
 
