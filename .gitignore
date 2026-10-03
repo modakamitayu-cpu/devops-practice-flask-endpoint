@@ -11,3 +11,5 @@ crash.log
 *.tfvars
 *.auto.tfvars
 !terraform.tfvars.example
+dependency.dot
+dependency.png
