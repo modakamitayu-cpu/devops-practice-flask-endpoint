@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: flask-app
+  namespace: devops-practice
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: flask-app
+  template:
+    metadata:
+     labels:
+       app: flask-app
+    spec:
+      automountServiceAccountToken: false
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 10001
+        runAsGroup: 10001
+      containers:
+        - name: flask
+          image: devops-practice:day09
+          imagePullPolicy: Never
+          command: ["python", "-m", "gunicorn"] 
+          args:
+            - "--bind=0.0.0.0:8000"
+            - "--workers=1"
+            - "--access-logfile=-"
+            - "--error-logfile=-"
+            - "app:app"
+          ports:
+            - name: http
+              containerPort: 8000
+          env:
+            - name: APP_READY 
+              value: "true"
+            - name: DB_HOST
+              value: "" 
+          resources:
+            requests:
+              cpu: 100m
+              memory: 64Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          securityContext:
+             allowPrivilegeEscalation: false
+             capabilities:
+               drop: ["ALL"]
