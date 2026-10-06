@@ -33,10 +33,21 @@ spec:
             - name: http
               containerPort: 8000
           env:
-            - name: APP_READY 
-              value: "true"
+            - name: APP_READY
+              valueFrom:
+                configMapKeyRef:
+                  name: flask-config
+                  key: APP_READY 
             - name: DB_HOST
-              value: "" 
+              valueFrom:
+                configMapKeyRef:
+                  name: flask-config
+                  key: DB_HOST
+            - name: DEMO_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: flask-demo-secret
+                  key: DEMO_API_TOKEN      
           resources:
             requests:
               cpu: 100m
