@@ -1,0 +1,9 @@
+spec:
+  template:
+    spec:
+      containers:
+        - name: flask
+          command:
+            - python
+            - -m
+            - gunicorn_typo
