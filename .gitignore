@@ -13,3 +13,6 @@ crash.log
 !terraform.tfvars.example
 dependency.dot
 dependency.png
+.pytest_cache/
+.coverage
+htmlcov/
