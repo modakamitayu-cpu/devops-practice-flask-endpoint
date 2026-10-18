@@ -1,12 +1,13 @@
 import os
-from flask import Flask, jsonify
 
 import psycopg
+from flask import Flask, jsonify
 
 app = Flask(__name__)
 
+
 @app.get("/")
-def index ():
+def index():
     return jsonify(service="devops-practice", version="1.0.0")
 
 
@@ -17,7 +18,7 @@ def health():
 
 @app.get("/ready")
 def ready():
-    #LAb Simulation only: no Real dependency check it
+    # LAb Simulation only: no Real dependency check it
 
     # is_ready = os.getenv("APP_READY", "true").lower() == "true"
     # status = "ready" if is_ready else "no_ready"
@@ -29,7 +30,6 @@ def ready():
     # Preserve standalone operation for labs without a database.
     if not os.getenv("DB_HOST"):
         return jsonify(status="ready", database="not_configured"), 200
-
 
     try:
         with psycopg.connect(
@@ -43,12 +43,10 @@ def ready():
         ) as conn:
             with conn.cursor() as cur:
                 cur.execute("SELECT 1")
-                cur.fetchone()        
+                cur.fetchone()
 
         return jsonify(status="ready", database="connected"), 200
- 
+
     except psycopg.Error as exc:
-        app.logger.warning(
-            "Database readiness failed: %s", type(exc).__name__
-        )
+        app.logger.warning("Database readiness failed: %s", type(exc).__name__)
         return jsonify(status="not_ready", database="unavailable"), 503
