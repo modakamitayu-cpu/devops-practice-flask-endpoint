@@ -16,3 +16,6 @@ dependency.png
 .pytest_cache/
 .coverage
 htmlcov/
+# Deliberately fake secret-detection fixtures
+/security-fixtures/
+gitleaks-report.json
