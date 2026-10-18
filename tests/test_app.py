@@ -1,4 +1,3 @@
-
 import psycopg
 import pytest
 
