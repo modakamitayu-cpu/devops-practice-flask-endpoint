@@ -63,3 +63,42 @@ jobs:
         uses: gitleaks/gitleaks-action@v2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}             
+
+  image-security:
+    name: Build and scan container
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Build container image
+        run: |
+          docker build \
+            --tag devops-practice:${{ github.sha }} \
+            .
+
+      - name: Report HIGH and CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: "devops-practice:${{ github.sha }}"
+          format: "table"
+          vuln-type: "os,library"
+          severity: "HIGH,CRITICAL"
+          ignore-unfixed: true
+          exit-code: "0"
+
+      - name: Block fixable CRITICAL vulnerabilities
+        uses: aquasecurity/trivy-action@v0.36.0
+        with:
+          image-ref: "devops-practice:${{ github.sha }}"
+          format: "table"
+          vuln-type: "os,library"
+          severity: "CRITICAL"
+          ignore-unfixed: true
+          exit-code: "1"
+          skip-setup-trivy: true          
