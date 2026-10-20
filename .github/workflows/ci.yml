@@ -65,12 +65,13 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}             
 
   image-security:
-    name: Build and scan container
+    name: Build, scan and publish container
     runs-on: ubuntu-latest
     timeout-minutes: 15
 
     permissions:
       contents: read
+      packages: write
 
     steps:
       - name: Check out repository
@@ -79,6 +80,8 @@ jobs:
       - name: Build container image
         run: |
           docker build \
+            --label "org.opencontainers.image.revision=${{ github.sha }}" \
+            --label "org.opencontainers.image.source=https://github.com/${{ github.repository }}" \
             --tag devops-practice:${{ github.sha }} \
             .
 
@@ -101,4 +104,32 @@ jobs:
           severity: "CRITICAL"
           ignore-unfixed: true
           exit-code: "1"
-          skip-setup-trivy: true          
+          skip-setup-trivy: true    
+      - name: Set lowercase GHCR image name
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        shell: bash
+        run: |
+          echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}" >> "$GITHUB_ENV"
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag image with commit SHA
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: |
+          docker tag \
+            devops-practice:${{ github.sha }} \
+            "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Publish commit-tagged image
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker push "${IMAGE_NAME}:${GITHUB_SHA}"
+
+      - name: Verify published image manifest
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: docker buildx imagetools inspect "${IMAGE_NAME}:${GITHUB_SHA}"                
