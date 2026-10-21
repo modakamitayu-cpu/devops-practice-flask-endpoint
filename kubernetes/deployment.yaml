@@ -20,7 +20,7 @@ spec:
         runAsGroup: 10001
       containers:
         - name: flask
-          image: devops-practice:day09
+          image: devops-practice:day23
           imagePullPolicy: Never
           command: ["python", "-m", "gunicorn"] 
           args:
@@ -85,3 +85,12 @@ spec:
              allowPrivilegeEscalation: false
              capabilities:
                drop: ["ALL"]
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+
+  minReadySeconds: 5
+  progressDeadlineSeconds: 60
+  revisionHistoryLimit: 5
