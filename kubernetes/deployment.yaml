@@ -20,7 +20,7 @@ spec:
         runAsGroup: 10001
       containers:
         - name: flask
-          image: devops-practice:day23
+          image: devops-practice:day22
           imagePullPolicy: Never
           command: ["python", "-m", "gunicorn"] 
           args:
